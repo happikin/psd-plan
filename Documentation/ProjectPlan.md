@@ -24,13 +24,13 @@ The team follows a lightweight Scrum-inspired iterative approach:
 
 # 3. Team Structure and Role Allocation
 
-| Role | Primary Responsibilities |
-|------|--------------------------|
-| Project Lead | Planning, coordination, documentation oversight, risk management |
-| Backend Lead | API development, ingestion pipeline, database management |
-| Data/NLP Lead | Metadata extraction, keyword analysis, relationship modelling |
-| Frontend Lead | UI implementation, visualisation, interaction design |
-| DevOps & QA Lead | CI/CD setup, testing framework, Docker deployment |
+| Role | Owners | Primary Responsibilities |
+|------|----|--------------------------|
+| Project Lead | Adam Todd | Planning, coordination, documentation oversight, risk management |
+| Backend Lead | Yashesvi Raina | API development, ingestion pipeline, database management |
+| Data/NLP Lead | Hansheng Li | Metadata extraction, keyword analysis, relationship modelling |
+| Frontend Lead | Xin Wen | UI implementation, visualisation, interaction design |
+| DevOps & QA Lead | Boyang Li | CI/CD setup, testing framework, Docker deployment |
 
 ---
 
