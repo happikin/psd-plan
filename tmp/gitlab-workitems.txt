@@ -1,0 +1,130 @@
+NLP keyword extraction from abstract stored in corehub.db
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#27 · created by Adam Todd
+    Assigned to xin wen
+    Status: ⚠️ Partial (do not close yet)
+    Notes: Keyword extraction from abstract/text is implemented, but storage is not in `corehub.db` (currently in-memory + `data/parsed/papers.jsonl`).
+    Evidence: `src/keyword_extractor.py`, `src/metadata_extractor.py`, `src/dataset_service.py`
+
+corehub-backend testing
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#26 · created by Adam Todd
+    Assigned to Boyang Li
+    Status: ✅ Can close
+    Notes: Backend tests exist and pass.
+    Evidence: `tests/test_services.py`, `tests/test_dataset_service.py` (4 tests passing)
+
+Frontend low level design and justfication
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#25 · created by Adam Todd
+    Assigned to Hansheng Li
+    Status: ❌ Keep open
+    Notes: Frontend implementation/design docs for low-level UI architecture not added in codebase.
+
+Write unit tests for raw text storage
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#24 · created by Adam Todd
+Final-Milestone
+    Assigned to Boyang Li
+    Status: ✅ Can close
+    Notes: Raw parsed document storage/load pipeline is tested.
+    Evidence: `tests/test_dataset_service.py`
+
+Write unit tests for PDF extraction
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#23 · created by Adam Todd
+Final-Milestone
+    Assigned to Boyang Li
+    Status: ⚠️ Partial (do not close yet)
+    Notes: PDF extraction is implemented but no direct unit test targets `src/pdf_parser.py` with real/fixture PDFs and failure cases.
+    Evidence: `src/pdf_parser.py`
+
+Implement basic filter UI (author, keyword, date)
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#22 · created by Adam Todd
+Final-Milestone
+    Assigned to xin wen
+    Status: ❌ Keep open
+    Notes: Backend filtering API exists, but UI is not implemented.
+    Evidence: `GET /documents` in `src/app.py`
+
+Validate reference extraction accuracy
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#21 · created by Adam Todd
+Final-Milestone
+    Assigned to Hansheng Li
+    Status: ⚠️ Partial (do not close yet)
+    Notes: Reference extraction logic and a basic test path exist, but no explicit accuracy-validation dataset/report.
+    Evidence: `src/reference_extractor.py`, `tests/test_services.py`
+
+Implement citation parsing logic
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#20 · created by Adam Todd
+Final-Milestone
+    Assigned to Hansheng Li
+    Status: ✅ Can close
+    Notes: Citation/reference parsing flow implemented and integrated into metadata extraction and credibility scoring.
+    Evidence: `src/reference_extractor.py`, `src/metadata_extractor.py`, `src/credibility_service.py`
+
+Persist credibility score to database
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#19 · created by Adam Todd
+Final-Milestone
+    Assigned to Yashesvi Raina
+    Status: ❌ Keep open
+    Notes: Credibility score is computed in-memory; no database persistence layer yet.
+    Evidence: `src/credibility_service.py`, `src/repository.py`
+
+Implement credibility score computation logic
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#18 · created by Adam Todd
+Final-Milestone
+    Assigned to Yashesvi Raina
+    Status: ✅ Can close
+    Notes: Computation logic implemented and exercised in tests.
+    Evidence: `src/credibility_service.py`, `tests/test_services.py`
+
+Implement extraction and storage.
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#17 · created by Adam Todd
+Final-Milestone
+    Assigned to Adam Todd
+    Status: ✅ Can close
+    Notes: PDF parsing + metadata extraction + parsed storage pipeline implemented.
+    Evidence: `src/pdf_parser.py`, `src/metadata_extractor.py`, `src/dataset_service.py`, `data/parsed/papers.jsonl`
+
+Enable coverage reporting in CI
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#15 · created by Adam Todd
+Milestone 2
+    Assigned to Boyang Li
+    Status: ❌ Keep open
+    Notes: No CI configuration/coverage reporting file present in workspace.
+
+Configure pytest structure
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#14 · created by Adam Todd
+Milestone 2
+    Assigned to Boyang Li
+    Status: ✅ Can close
+    Notes: Pytest config and tests are set up.
+    Evidence: `pyproject.toml` ([tool.pytest.ini_options]), `tests/`
+
+Improve metadata extraction reliability
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#11 · created by Adam Todd
+Milestone 2
+    Assigned to Hansheng Li
+    Status: ⚠️ Partial (do not close yet)
+    Notes: Reliability improved with deterministic heuristics, but not yet validated against a quality benchmark.
+    Evidence: `src/metadata_extractor.py`
+
+Finalise keyword extraction approach
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#10 · created by Adam Todd
+Milestone 2
+    Assigned to Hansheng Li
+    Status: ✅ Can close
+    Notes: Deterministic keyword extraction strategy implemented and integrated.
+    Evidence: `src/keyword_extractor.py`, `src/metadata_extractor.py`
+
+Implement raw text storage logic
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#9 · created by Adam Todd
+Milestone 2
+    Assigned to Yashesvi Raina
+    Status: ✅ Can close
+    Notes: Raw text is stored in runtime repository and in parsed dataset artifacts.
+    Evidence: `src/repository.py`, `src/models.py`, `src/dataset_service.py`
+
+Establish CI/CD Pipeline
+epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#5 · created by Yashesvi Raina
+Milestone 2
+feature
+    Assigned to Boyang Li
+    Status: ❌ Keep open
+    Notes: CI/CD pipeline config is not present in current workspace.

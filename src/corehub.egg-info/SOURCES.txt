@@ -1,0 +1,9 @@
+LICENSE
+README.md
+pyproject.toml
+src/corehub.egg-info/PKG-INFO
+src/corehub.egg-info/SOURCES.txt
+src/corehub.egg-info/dependency_links.txt
+src/corehub.egg-info/requires.txt
+src/corehub.egg-info/top_level.txt
+tests/test_services.py
