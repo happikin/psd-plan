@@ -30,6 +30,12 @@ This repository now contains an executable MVP aligned with the project story an
 ## Quick start
 
 1. Create and activate a virtual environment.
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+```
+
 2. Install dependencies:
 
 ```bash
