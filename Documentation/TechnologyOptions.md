@@ -45,7 +45,7 @@ The stack was selected using these principles:
 - **Express:** Strong option, but team documentation and implementation are currently Python-first (NLP and ingestion pipeline alignment).
 
 ### Project components using FastAPI
-- `src/app.py`
+- `src/backend/app.py`
 - REST endpoints: upload, query/filter, credibility, graph payload, timeline
 
 ---
@@ -71,7 +71,7 @@ The stack was selected using these principles:
 - **Go:** Strong performance but less convenient for rapid NLP-driven experimentation.
 
 ### Project components using Python
-- All backend modules in `src/`
+- All backend modules in `src/backend/`
 - Data extraction, credibility scoring, query logic, timeline aggregation
 - Test suite in `tests/`
 
@@ -97,7 +97,7 @@ The stack was selected using these principles:
 
 ### Project components using Uvicorn
 - Local run command in `README.md`
-- API hosting for `src/app.py`
+- API hosting for `src/backend/app.py`
 
 ---
 
@@ -120,7 +120,7 @@ The stack was selected using these principles:
 - **Manual validation:** Higher defect risk and maintenance burden.
 
 ### Project components using Pydantic
-- `src/models.py`
+- `src/backend/models.py`
 - Request/response shape consistency in API handlers
 
 ---
@@ -144,8 +144,8 @@ The stack was selected using these principles:
 - **pypdf:** Lightweight and simple, but extraction quality is weaker on scanned/complex layouts compared to PyMuPDF.
 
 ### Project components using PyMuPDF
-- `src/pdf_parser.py`
-- `POST /documents/upload` pipeline in `src/app.py`
+- `src/backend/pdf_parser.py`
+- `POST /documents/upload` pipeline in `src/backend/app.py`
 
 ---
 
@@ -170,7 +170,7 @@ The stack was selected using these principles:
 - **Cytoscape.js:** Good network graphs, but less unified for mixed custom visuals and broader UI needs.
 
 ### Project components using React + D3
-- Planned `frontend/` interface shell.
+- Planned `src/frontend/` interface shell.
 - Consumption of `/graph` and `/timeline` endpoints.
 
 ---
@@ -231,7 +231,7 @@ The stack was selected using these principles:
 | API layer | FastAPI + Uvicorn |
 | Domain/data models | Pydantic |
 | PDF ingestion | PyMuPDF (fitz) |
-| Metadata/analytics services | Python modules (`src/*.py`) |
+| Metadata/analytics services | Python modules (`src/backend/*.py`) |
 | Query/filter service | Python + FastAPI endpoint layer |
 | Credibility computation | Python service (`credibility_service.py`) |
 | Timeline aggregation | Python service (`timeline_service.py`) |

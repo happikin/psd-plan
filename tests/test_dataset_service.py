@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from dataset_service import bootstrap_repository, load_parsed_jsonl, parse_papers_to_jsonl
+from dataset_service import append_new_papers_to_jsonl, bootstrap_repository, load_parsed_jsonl, parse_papers_to_jsonl
 from repository import InMemoryRepository
 
 
@@ -32,7 +32,12 @@ def test_parse_papers_to_jsonl_and_load(monkeypatch, tmp_path: Path) -> None:
     assert len(repo.all_papers()) == 2
 
 
-def test_bootstrap_uses_cache_when_available(monkeypatch, tmp_path: Path) -> None:
+def test_bootstrap_appends_only_new_pdfs(monkeypatch, tmp_path: Path) -> None:
+    papers_dir = tmp_path / "Papers"
+    papers_dir.mkdir()
+    (papers_dir / "x.pdf").write_bytes(b"pdf-x")
+    (papers_dir / "y.pdf").write_bytes(b"pdf-y")
+
     parsed_path = tmp_path / "data" / "parsed" / "papers.jsonl"
     parsed_path.parent.mkdir(parents=True, exist_ok=True)
     parsed_path.write_text(
@@ -40,21 +45,23 @@ def test_bootstrap_uses_cache_when_available(monkeypatch, tmp_path: Path) -> Non
         encoding="utf-8",
     )
 
+    calls = []
+
+    def fake_parse_pdf_text(data: bytes) -> str:
+        calls.append(data)
+        if data == b"pdf-y":
+            return "Paper Y\nBob\nAbstract: reliable\nPublished 2025\nKeywords: ai"
+        raise ValueError("unexpected payload")
+
+    monkeypatch.setattr("dataset_service.parse_pdf_text", fake_parse_pdf_text)
+
+    parsed, failed, skipped = append_new_papers_to_jsonl(papers_dir, parsed_path)
+    assert parsed == 1
+    assert failed == 0
+    assert skipped == 1
+    assert calls == [b"pdf-y"]
+
     repo = InMemoryRepository()
-
-    def should_not_be_called(*args, **kwargs):
-        raise AssertionError("parse path should not run when cache exists")
-
-    monkeypatch.setattr("dataset_service.parse_papers_to_jsonl", should_not_be_called)
-
-    result = bootstrap_repository(
-        repo,
-        papers_dir=tmp_path / "Papers",
-        parsed_output_path=parsed_path,
-        force_reparse=False,
-    )
-
-    assert result["used_cache"] is True
-    assert result["loaded"] == 1
-    assert len(repo.all_papers()) == 1
-
+    result = bootstrap_repository(repo, papers_dir=papers_dir, parsed_output_path=parsed_path, force_reparse=False)
+    assert result["loaded"] == 2
+    assert len(repo.all_papers()) == 2

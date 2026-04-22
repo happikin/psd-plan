@@ -30,11 +30,11 @@ Use this file as the shared internal task list for planning and execution.
 
 | ID | Priority | Task | Owner | Completed | Evidence |
 |----|----------|------|-------|-----------|----------|
-| T-001 | P1 | Scaffold backend MVP with FastAPI modules | Team | 2026-04-21 | `src/app.py`, service modules, tests |
-| T-002 | P1 | Implement credibility, query, graph, timeline services | Team | 2026-04-21 | `src/credibility_service.py`, `src/query_service.py`, `src/graph_service.py`, `src/timeline_service.py` |
+| T-001 | P1 | Scaffold backend MVP with FastAPI modules | Team | 2026-04-21 | `src/backend/app.py`, service modules, tests |
+| T-002 | P1 | Implement credibility, query, graph, timeline services | Team | 2026-04-21 | `src/backend/credibility_service.py`, `src/backend/query_service.py`, `src/backend/graph_service.py`, `src/backend/timeline_service.py` |
 | T-003 | P1 | Set up tests for extraction and analytics core flows | Team | 2026-04-21 | `tests/test_services.py` |
-| T-004 | P1 | Migrate PDF parser to PyMuPDF | Team | 2026-04-21 | `src/pdf_parser.py`, `pyproject.toml`, `Documentation/TechnologyOptions.md` |
-| T-005 | P1 | Add parsed dataset bootstrap from `Papers/` to `data/parsed/papers.jsonl` | Team | 2026-04-21 | `src/dataset_service.py`, startup bootstrap, `tests/test_dataset_service.py` |
+| T-004 | P1 | Migrate PDF parser to PyMuPDF | Team | 2026-04-21 | `src/backend/pdf_parser.py`, `pyproject.toml`, `Documentation/TechnologyOptions.md` |
+| T-005 | P1 | Add parsed dataset bootstrap from `Papers/` to `data/parsed/papers.jsonl` | Team | 2026-04-21 | `src/backend/dataset_service.py`, startup bootstrap, `tests/test_dataset_service.py` |
 
 ## Quick Add Template
 

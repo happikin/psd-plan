@@ -50,6 +50,52 @@ def parse_papers_to_jsonl(papers_dir: Path, parsed_output_path: Path) -> Tuple[i
     return ingested_count, failed_count
 
 
+def _existing_source_files(parsed_output_path: Path) -> set[str]:
+    if not parsed_output_path.exists():
+        return set()
+
+    source_files: set[str] = set()
+    with parsed_output_path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            content = line.strip()
+            if not content:
+                continue
+            try:
+                item = json.loads(content)
+            except json.JSONDecodeError:
+                continue
+            source_file = item.get("source_file")
+            if isinstance(source_file, str) and source_file:
+                source_files.add(source_file)
+    return source_files
+
+
+def append_new_papers_to_jsonl(papers_dir: Path, parsed_output_path: Path) -> Tuple[int, int, int]:
+    parsed_output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    existing_files = _existing_source_files(parsed_output_path)
+    ingested_count = 0
+    failed_count = 0
+    skipped_count = 0
+
+    with parsed_output_path.open("a", encoding="utf-8") as handle:
+        for pdf_path in _pdf_paths(papers_dir):
+            if pdf_path.name in existing_files:
+                skipped_count += 1
+                continue
+            try:
+                raw_text = parse_pdf_text(pdf_path.read_bytes())
+                doc = _build_ingested_document(raw_text)
+                payload = doc.model_dump()
+                payload["source_file"] = pdf_path.name
+                handle.write(json.dumps(payload, ensure_ascii=True) + "\n")
+                ingested_count += 1
+            except (PDFParserError, OSError, ValueError):
+                failed_count += 1
+
+    return ingested_count, failed_count, skipped_count
+
+
 def load_parsed_jsonl(repository: InMemoryRepository, parsed_path: Path) -> int:
     if not parsed_path.exists():
         return 0
@@ -75,17 +121,20 @@ def bootstrap_repository(
     parsed_output_path: Path,
     force_reparse: bool = False,
 ) -> dict[str, int | bool]:
-    parsed_exists = parsed_output_path.exists()
+    parsed = 0
+    failed = 0
+    skipped = 0
+    used_cache = True
 
-    if force_reparse or not parsed_exists:
+    if force_reparse:
         if not papers_dir.exists():
-            return {"loaded": 0, "parsed": 0, "failed": 0, "used_cache": False}
+            return {"loaded": 0, "parsed": 0, "failed": 0, "skipped": 0, "used_cache": False}
         parsed, failed = parse_papers_to_jsonl(papers_dir, parsed_output_path)
-        repository.reset()
-        loaded = load_parsed_jsonl(repository, parsed_output_path)
-        return {"loaded": loaded, "parsed": parsed, "failed": failed, "used_cache": False}
+        used_cache = False
+    elif papers_dir.exists():
+        parsed, failed, skipped = append_new_papers_to_jsonl(papers_dir, parsed_output_path)
+        used_cache = parsed == 0 and failed == 0
 
     repository.reset()
     loaded = load_parsed_jsonl(repository, parsed_output_path)
-    return {"loaded": loaded, "parsed": 0, "failed": 0, "used_cache": True}
-
+    return {"loaded": loaded, "parsed": parsed, "failed": failed, "skipped": skipped, "used_cache": used_cache}

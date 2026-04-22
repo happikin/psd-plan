@@ -7,7 +7,7 @@ This repository now contains an executable MVP aligned with the project story an
 - `FastAPI` backend for document ingestion and analytics APIs.
 - PDF upload endpoint with text parsing and metadata extraction.
 - Dataset bootstrap pipeline that parses `Papers/*.pdf` into `data/parsed/papers.jsonl`.
-- Runtime startup loading from parsed artifacts (not from PDF binaries).
+- Runtime startup sync that parses only new PDFs and appends them to parsed artifacts.
 - Deterministic keyword, reference, and sentiment extraction.
 - In-memory relational model for papers, authors, keywords, and references.
 - Author credibility scoring based on citation references in the ingested dataset.
@@ -19,7 +19,8 @@ This repository now contains an executable MVP aligned with the project story an
 ## Repository structure
 
 - `Documentation/`: project plan, requirements, design, risks, test plan, traceability, shared task board.
-- `src/`: backend modules and services.
+- `src/backend/`: FastAPI backend modules and services.
+- `src/frontend/`: frontend workspace placeholder for UI implementation.
 - `tests/`: pytest test suite.
 
 ## Task tracking
@@ -33,7 +34,7 @@ This repository now contains an executable MVP aligned with the project story an
 
 ```bash
 python3 -m venv .venv
-. .venv/bin/activate
+source .venv/bin/activate
 ```
 
 2. Install dependencies:
@@ -45,7 +46,7 @@ pip install -e .[dev]
 3. Run the backend:
 
 ```bash
-uvicorn app:app --reload --app-dir src
+uvicorn app:app --reload --app-dir src/backend
 ```
 
 4. Open API docs:
@@ -67,7 +68,8 @@ uvicorn app:app --reload --app-dir src
 
 - `Papers/` is treated as source-only input for initial parsing.
 - Parsed runtime dataset is stored as `data/parsed/papers.jsonl`.
-- The app loads cached parsed data on startup; PDFs are only re-read when cache is missing or `force_reparse=true` is used.
+- On each startup, the app checks `Papers/` for files not already present in parsed cache and parses only those new PDFs.
+- New parsed records are appended to `data/parsed/papers.jsonl`; existing parsed records are reused.
 - This supports the requirement to operate on parsed/metadata representations during runtime.
 
 ## Run tests

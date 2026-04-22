@@ -3,7 +3,7 @@ epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis
     Assigned to xin wen
     Status: ⚠️ Partial (do not close yet)
     Notes: Keyword extraction from abstract/text is implemented, but storage is not in `corehub.db` (currently in-memory + `data/parsed/papers.jsonl`).
-    Evidence: `src/keyword_extractor.py`, `src/metadata_extractor.py`, `src/dataset_service.py`
+    Evidence: `src/backend/keyword_extractor.py`, `src/backend/metadata_extractor.py`, `src/backend/dataset_service.py`
 
 corehub-backend testing
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#26 · created by Adam Todd
@@ -31,8 +31,8 @@ epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis
 Final-Milestone
     Assigned to Boyang Li
     Status: ⚠️ Partial (do not close yet)
-    Notes: PDF extraction is implemented but no direct unit test targets `src/pdf_parser.py` with real/fixture PDFs and failure cases.
-    Evidence: `src/pdf_parser.py`
+    Notes: PDF extraction is implemented but no direct unit test targets `src/backend/pdf_parser.py` with real/fixture PDFs and failure cases.
+    Evidence: `src/backend/pdf_parser.py`
 
 Implement basic filter UI (author, keyword, date)
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#22 · created by Adam Todd
@@ -40,7 +40,7 @@ Final-Milestone
     Assigned to xin wen
     Status: ❌ Keep open
     Notes: Backend filtering API exists, but UI is not implemented.
-    Evidence: `GET /documents` in `src/app.py`
+    Evidence: `GET /documents` in `src/backend/app.py`
 
 Validate reference extraction accuracy
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#21 · created by Adam Todd
@@ -48,7 +48,7 @@ Final-Milestone
     Assigned to Hansheng Li
     Status: ⚠️ Partial (do not close yet)
     Notes: Reference extraction logic and a basic test path exist, but no explicit accuracy-validation dataset/report.
-    Evidence: `src/reference_extractor.py`, `tests/test_services.py`
+    Evidence: `src/backend/reference_extractor.py`, `tests/test_services.py`
 
 Implement citation parsing logic
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#20 · created by Adam Todd
@@ -56,7 +56,7 @@ Final-Milestone
     Assigned to Hansheng Li
     Status: ✅ Can close
     Notes: Citation/reference parsing flow implemented and integrated into metadata extraction and credibility scoring.
-    Evidence: `src/reference_extractor.py`, `src/metadata_extractor.py`, `src/credibility_service.py`
+    Evidence: `src/backend/reference_extractor.py`, `src/backend/metadata_extractor.py`, `src/backend/credibility_service.py`
 
 Persist credibility score to database
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#19 · created by Adam Todd
@@ -64,7 +64,7 @@ Final-Milestone
     Assigned to Yashesvi Raina
     Status: ❌ Keep open
     Notes: Credibility score is computed in-memory; no database persistence layer yet.
-    Evidence: `src/credibility_service.py`, `src/repository.py`
+    Evidence: `src/backend/credibility_service.py`, `src/backend/repository.py`
 
 Implement credibility score computation logic
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#18 · created by Adam Todd
@@ -72,7 +72,7 @@ Final-Milestone
     Assigned to Yashesvi Raina
     Status: ✅ Can close
     Notes: Computation logic implemented and exercised in tests.
-    Evidence: `src/credibility_service.py`, `tests/test_services.py`
+    Evidence: `src/backend/credibility_service.py`, `tests/test_services.py`
 
 Implement extraction and storage.
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#17 · created by Adam Todd
@@ -80,7 +80,7 @@ Final-Milestone
     Assigned to Adam Todd
     Status: ✅ Can close
     Notes: PDF parsing + metadata extraction + parsed storage pipeline implemented.
-    Evidence: `src/pdf_parser.py`, `src/metadata_extractor.py`, `src/dataset_service.py`, `data/parsed/papers.jsonl`
+    Evidence: `src/backend/pdf_parser.py`, `src/backend/metadata_extractor.py`, `src/backend/dataset_service.py`, `data/parsed/papers.jsonl`
 
 Enable coverage reporting in CI
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#15 · created by Adam Todd
@@ -103,7 +103,7 @@ Milestone 2
     Assigned to Hansheng Li
     Status: ⚠️ Partial (do not close yet)
     Notes: Reliability improved with deterministic heuristics, but not yet validated against a quality benchmark.
-    Evidence: `src/metadata_extractor.py`
+    Evidence: `src/backend/metadata_extractor.py`
 
 Finalise keyword extraction approach
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#10 · created by Adam Todd
@@ -111,7 +111,7 @@ Milestone 2
     Assigned to Hansheng Li
     Status: ✅ Can close
     Notes: Deterministic keyword extraction strategy implemented and integrated.
-    Evidence: `src/keyword_extractor.py`, `src/metadata_extractor.py`
+    Evidence: `src/backend/keyword_extractor.py`, `src/backend/metadata_extractor.py`
 
 Implement raw text storage logic
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#9 · created by Adam Todd
@@ -119,7 +119,7 @@ Milestone 2
     Assigned to Yashesvi Raina
     Status: ✅ Can close
     Notes: Raw text is stored in runtime repository and in parsed dataset artifacts.
-    Evidence: `src/repository.py`, `src/models.py`, `src/dataset_service.py`
+    Evidence: `src/backend/repository.py`, `src/backend/models.py`, `src/backend/dataset_service.py`
 
 Establish CI/CD Pipeline
 epcc-msc/practical-software-development/academicyear2526/codezods/paper-analysis-prototype#5 · created by Yashesvi Raina
