@@ -12,14 +12,26 @@ def test_parse_papers_to_jsonl_and_load(monkeypatch, tmp_path: Path) -> None:
 
     parsed_path = tmp_path / "data" / "parsed" / "papers.jsonl"
 
-    def fake_parse_pdf_text(data: bytes) -> str:
+    def fake_parse_pdf_content(data: bytes) -> dict[str, object]:
         if data == b"pdf-a":
-            return "Paper A\nAlice\nAbstract: A reliable model\nPublished 2020\nKeywords: ai, graph"
+            return {
+                "raw_text": "Paper A\nAlice\nAbstract: A reliable model\nPublished 2020\nKeywords: ai, graph",
+                "pdf_title": None,
+                "pdf_author": None,
+                "layout_title": "Paper A",
+                "layout_authors": ["Alice"],
+            }
         if data == b"pdf-b":
-            return "Paper B\nBob\nAbstract: A robust model\nPublished 2021\nKeywords: ai, timeline\nReferences\nPaper A"
+            return {
+                "raw_text": "Paper B\nBob\nAbstract: A robust model\nPublished 2021\nKeywords: ai, timeline\nReferences\nPaper A",
+                "pdf_title": None,
+                "pdf_author": None,
+                "layout_title": "Paper B",
+                "layout_authors": ["Bob"],
+            }
         raise ValueError("bad data")
 
-    monkeypatch.setattr("dataset_service.parse_pdf_text", fake_parse_pdf_text)
+    monkeypatch.setattr("dataset_service.parse_pdf_content", fake_parse_pdf_content)
 
     parsed, failed = parse_papers_to_jsonl(papers_dir, parsed_path)
     assert parsed == 2
@@ -47,13 +59,19 @@ def test_bootstrap_appends_only_new_pdfs(monkeypatch, tmp_path: Path) -> None:
 
     calls = []
 
-    def fake_parse_pdf_text(data: bytes) -> str:
+    def fake_parse_pdf_content(data: bytes) -> dict[str, object]:
         calls.append(data)
         if data == b"pdf-y":
-            return "Paper Y\nBob\nAbstract: reliable\nPublished 2025\nKeywords: ai"
+            return {
+                "raw_text": "Paper Y\nBob\nAbstract: reliable\nPublished 2025\nKeywords: ai",
+                "pdf_title": None,
+                "pdf_author": None,
+                "layout_title": "Paper Y",
+                "layout_authors": ["Bob"],
+            }
         raise ValueError("unexpected payload")
 
-    monkeypatch.setattr("dataset_service.parse_pdf_text", fake_parse_pdf_text)
+    monkeypatch.setattr("dataset_service.parse_pdf_content", fake_parse_pdf_content)
 
     parsed, failed, skipped = append_new_papers_to_jsonl(papers_dir, parsed_path)
     assert parsed == 1

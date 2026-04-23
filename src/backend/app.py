@@ -9,7 +9,7 @@ from dataset_service import bootstrap_repository
 from graph_service import build_graph_payload
 from metadata_extractor import extract_metadata
 from models import IngestedDocument
-from pdf_parser import PDFParserError, parse_pdf_text
+from pdf_parser import PDFParserError, parse_pdf_content
 from query_service import query_papers
 from repository import InMemoryRepository
 from timeline_service import keyword_timeline
@@ -39,20 +39,28 @@ async def upload_document(file: UploadFile = File(...)) -> dict[str, object]:
     file_bytes = await file.read()
 
     try:
-        raw_text = parse_pdf_text(file_bytes)
+        parsed = parse_pdf_content(file_bytes)
     except PDFParserError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    metadata = extract_metadata(raw_text)
+    metadata = extract_metadata(
+        parsed["raw_text"],
+        pdf_title=parsed.get("pdf_title"),
+        pdf_author=parsed.get("pdf_author"),
+        layout_title=parsed.get("layout_title"),
+        layout_authors=parsed.get("layout_authors"),
+    )
     paper = repo.add_document(
         IngestedDocument(
             title=metadata["title"],
-            raw_text=raw_text,
+            raw_text=parsed["raw_text"],
             abstract=metadata["abstract"],
             publication_date=metadata["publication_date"],
             sentiment=metadata["sentiment"],
             authors=metadata["authors"],
             keywords=metadata["keywords"],
+            topics=metadata["topics"],
+            key_terms=metadata["key_terms"],
             references=metadata["references"],
         )
     )
@@ -63,6 +71,8 @@ async def upload_document(file: UploadFile = File(...)) -> dict[str, object]:
         "title": paper.title,
         "authors": paper.authors,
         "keywords": paper.keywords,
+        "topics": paper.topics,
+        "key_terms": paper.key_terms,
         "publication_date": paper.publication_date,
     }
 

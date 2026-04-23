@@ -5,9 +5,11 @@ from typing import Dict, List, Optional
 
 from keyword_extractor import extract_keywords
 from reference_extractor import extract_references
+from topic_extractor import extract_topics_and_key_terms
 
 POSITIVE_WORDS = {"reliable", "robust", "accurate", "effective", "improved", "strong", "significant"}
 NEGATIVE_WORDS = {"bias", "weak", "error", "noise", "failed", "limited", "unstable"}
+GENERIC_PDF_VALUES = {"", "untitled", "anonymous", "unknown", "none", "n/a"}
 
 
 def _extract_title(lines: List[str]) -> str:
@@ -26,6 +28,17 @@ def _extract_authors(lines: List[str]) -> List[str]:
     parts = re.split(r",| and ", candidate)
     names = [p.strip() for p in parts if p.strip()]
     if any(char.isdigit() for char in candidate):
+        return []
+    return names[:8]
+
+
+def _parse_author_string(author_value: str) -> List[str]:
+    cleaned = author_value.strip()
+    if not cleaned:
+        return []
+    parts = re.split(r",| and |;|\band\b", cleaned, flags=re.IGNORECASE)
+    names = [p.strip() for p in parts if p.strip()]
+    if any(any(ch.isdigit() for ch in name) for name in names):
         return []
     return names[:8]
 
@@ -75,10 +88,32 @@ def detect_sentiment(text: str) -> str:
     return "neutral"
 
 
-def extract_metadata(raw_text: str) -> Dict[str, object]:
+def _is_valid_pdf_value(value: Optional[str]) -> bool:
+    if value is None:
+        return False
+    return value.strip().lower() not in GENERIC_PDF_VALUES
+
+
+def extract_metadata(
+    raw_text: str,
+    pdf_title: Optional[str] = None,
+    pdf_author: Optional[str] = None,
+    layout_title: Optional[str] = None,
+    layout_authors: Optional[List[str]] = None,
+) -> Dict[str, object]:
     lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
-    title = _extract_title(lines)
-    authors = _extract_authors(lines)
+    heuristic_title = _extract_title(lines)
+    heuristic_authors = _extract_authors(lines)
+
+    title = (
+        pdf_title.strip()
+        if _is_valid_pdf_value(pdf_title)
+        else (layout_title.strip() if _is_valid_pdf_value(layout_title) else heuristic_title)
+    )
+
+    metadata_authors = _parse_author_string(pdf_author or "") if _is_valid_pdf_value(pdf_author) else []
+    layout_authors_clean = [a.strip() for a in (layout_authors or []) if a.strip()]
+    authors = metadata_authors or layout_authors_clean or heuristic_authors
     abstract = _extract_abstract(raw_text)
     publication_year = _extract_publication_year(raw_text)
 
@@ -87,6 +122,11 @@ def extract_metadata(raw_text: str) -> Dict[str, object]:
     keywords = list(dict.fromkeys(explicit_keywords + auto_keywords))[:12]
 
     references = extract_references(raw_text)
+    topics, key_terms = extract_topics_and_key_terms((abstract or raw_text)[:15000])
+    if not key_terms:
+        key_terms = list(dict.fromkeys([term for keyword in keywords for term in keyword.split()]))[:12]
+    if not topics and key_terms:
+        topics = [" ".join(key_terms[:5])]
 
     return {
         "title": title,
@@ -94,7 +134,8 @@ def extract_metadata(raw_text: str) -> Dict[str, object]:
         "abstract": abstract,
         "publication_date": publication_year,
         "keywords": keywords,
+        "topics": topics,
+        "key_terms": key_terms,
         "references": references,
         "sentiment": detect_sentiment(raw_text),
     }
-

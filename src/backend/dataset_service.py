@@ -7,7 +7,7 @@ from typing import Tuple
 from credibility_service import recompute_credibility
 from metadata_extractor import extract_metadata
 from models import IngestedDocument
-from pdf_parser import PDFParserError, parse_pdf_text
+from pdf_parser import PDFParserError, parse_pdf_content
 from repository import InMemoryRepository
 
 
@@ -15,8 +15,15 @@ def _pdf_paths(papers_dir: Path) -> list[Path]:
     return sorted([p for p in papers_dir.iterdir() if p.is_file() and p.suffix.lower() == ".pdf"])
 
 
-def _build_ingested_document(raw_text: str) -> IngestedDocument:
-    metadata = extract_metadata(raw_text)
+def _build_ingested_document(parsed_pdf: dict[str, object]) -> IngestedDocument:
+    raw_text = str(parsed_pdf["raw_text"])
+    metadata = extract_metadata(
+        raw_text,
+        pdf_title=parsed_pdf.get("pdf_title"),
+        pdf_author=parsed_pdf.get("pdf_author"),
+        layout_title=parsed_pdf.get("layout_title"),
+        layout_authors=parsed_pdf.get("layout_authors"),
+    )
     return IngestedDocument(
         title=metadata["title"],
         raw_text=raw_text,
@@ -25,6 +32,8 @@ def _build_ingested_document(raw_text: str) -> IngestedDocument:
         sentiment=metadata["sentiment"],
         authors=metadata["authors"],
         keywords=metadata["keywords"],
+        topics=metadata["topics"],
+        key_terms=metadata["key_terms"],
         references=metadata["references"],
     )
 
@@ -38,8 +47,8 @@ def parse_papers_to_jsonl(papers_dir: Path, parsed_output_path: Path) -> Tuple[i
     with parsed_output_path.open("w", encoding="utf-8") as handle:
         for pdf_path in _pdf_paths(papers_dir):
             try:
-                raw_text = parse_pdf_text(pdf_path.read_bytes())
-                doc = _build_ingested_document(raw_text)
+                parsed_pdf = parse_pdf_content(pdf_path.read_bytes())
+                doc = _build_ingested_document(parsed_pdf)
                 payload = doc.model_dump()
                 payload["source_file"] = pdf_path.name
                 handle.write(json.dumps(payload, ensure_ascii=True) + "\n")
@@ -84,8 +93,8 @@ def append_new_papers_to_jsonl(papers_dir: Path, parsed_output_path: Path) -> Tu
                 skipped_count += 1
                 continue
             try:
-                raw_text = parse_pdf_text(pdf_path.read_bytes())
-                doc = _build_ingested_document(raw_text)
+                parsed_pdf = parse_pdf_content(pdf_path.read_bytes())
+                doc = _build_ingested_document(parsed_pdf)
                 payload = doc.model_dump()
                 payload["source_file"] = pdf_path.name
                 handle.write(json.dumps(payload, ensure_ascii=True) + "\n")

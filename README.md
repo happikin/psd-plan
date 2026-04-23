@@ -72,6 +72,22 @@ uvicorn app:app --reload --app-dir src/backend
 - New parsed records are appended to `data/parsed/papers.jsonl`; existing parsed records are reused.
 - This supports the requirement to operate on parsed/metadata representations during runtime.
 
+## Parsed dataset schema (`data/parsed/papers.jsonl`)
+
+Each JSONL entry stores:
+
+- `title`
+- `raw_text`
+- `abstract`
+- `publication_date`
+- `sentiment`
+- `authors`
+- `keywords`
+- `topics`
+- `key_terms`
+- `references`
+- `source_file`
+
 ## Run tests
 
 ```bash

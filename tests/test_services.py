@@ -21,10 +21,32 @@ def test_extract_metadata_keywords_and_references() -> None:
     metadata = extract_metadata(text)
 
     assert metadata["title"] == "Efficient Graph Mining for Literature Analysis"
-    assert "alice smith" not in [a.lower() for a in metadata["authors"]] or len(metadata["authors"]) >= 1
+    assert metadata["authors"] == ["Alice Smith", "Bob Jones"]
     assert "graph mining" in metadata["keywords"]
+    assert len(metadata["topics"]) >= 1
+    assert len(metadata["key_terms"]) >= 1
     assert metadata["publication_date"] == 2022
     assert len(metadata["references"]) >= 2
+
+
+def test_extract_metadata_prefers_pdf_and_layout_signals() -> None:
+    text = """
+    This Should Not Be Chosen As Title
+    Wrong Line For Authors
+    Abstract: short text for checks.
+    Published 2024
+    """
+
+    metadata = extract_metadata(
+        text,
+        pdf_title="Reliable PDF Title",
+        pdf_author="Alice Smith, Bob Jones",
+        layout_title="Layout Title",
+        layout_authors=["Layout Person"],
+    )
+
+    assert metadata["title"] == "Reliable PDF Title"
+    assert metadata["authors"] == ["Alice Smith", "Bob Jones"]
 
 
 def test_credibility_score_and_timeline() -> None:
@@ -64,4 +86,3 @@ def test_credibility_score_and_timeline() -> None:
     points = keyword_timeline(repo, "nlp")
     assert [p.year for p in points] == [2021, 2022]
     assert [p.count for p in points] == [1, 1]
-

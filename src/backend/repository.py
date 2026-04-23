@@ -29,6 +29,8 @@ class InMemoryRepository:
             uploaded_at=datetime.now(timezone.utc),
             authors=list(dict.fromkeys([a.strip() for a in doc.authors if a.strip()])),
             keywords=list(dict.fromkeys([k.strip().lower() for k in doc.keywords if k.strip()])),
+            topics=list(dict.fromkeys([t.strip().lower() for t in doc.topics if t.strip()])),
+            key_terms=list(dict.fromkeys([k.strip().lower() for k in doc.key_terms if k.strip()])),
             references=list(dict.fromkeys([r.strip() for r in doc.references if r.strip()])),
         )
         self.papers[paper.id] = paper

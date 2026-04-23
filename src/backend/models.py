@@ -32,6 +32,8 @@ class Paper(BaseModel):
     uploaded_at: datetime
     authors: List[str] = Field(default_factory=list)
     keywords: List[str] = Field(default_factory=list)
+    topics: List[str] = Field(default_factory=list)
+    key_terms: List[str] = Field(default_factory=list)
     references: List[str] = Field(default_factory=list)
 
 
@@ -43,6 +45,8 @@ class IngestedDocument(BaseModel):
     sentiment: str = "neutral"
     authors: List[str] = Field(default_factory=list)
     keywords: List[str] = Field(default_factory=list)
+    topics: List[str] = Field(default_factory=list)
+    key_terms: List[str] = Field(default_factory=list)
     references: List[str] = Field(default_factory=list)
 
 
@@ -67,4 +71,3 @@ class GraphEdge(BaseModel):
 class GraphPayload(BaseModel):
     nodes: List[GraphNode]
     edges: List[GraphEdge]
-
