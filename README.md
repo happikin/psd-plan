@@ -15,10 +15,11 @@ This repository now contains an executable MVP aligned with the project story an
 - Graph payload API for D3 frontend integration.
 - Keyword timeline API for topic evolution view.
 - Unit tests for metadata extraction, credibility scoring, and timeline aggregation.
+- API contract tests for response models, pagination metadata, and error schema.
 
 ## Repository structure
 
-- `Documentation/`: project plan, requirements, design, risks, test plan, traceability, shared task board.
+- `Documentation/`: project plan, requirements, design, risks, test plan, traceability, API contract, shared task board.
 - `src/backend/`: FastAPI backend modules and services.
 - `src/frontend/`: frontend workspace placeholder for UI implementation.
 - `tests/`: pytest test suite.
@@ -26,6 +27,7 @@ This repository now contains an executable MVP aligned with the project story an
 ## Task tracking
 
 - Shared internal task list: `Documentation/TaskBoard.md`
+- API contract reference: `Documentation/APIContract.md`
 - Add new work to `Backlog`, move active work to `In Progress`, and completed work to `Done`.
 
 ## Quick start
@@ -57,10 +59,11 @@ uvicorn app:app --reload --app-dir src/backend
 
 - `GET /health`
 - `POST /documents/upload` (PDF upload)
-- `GET /documents` (supports `author`, `keyword`, `year_from`, `year_to`)
+- `GET /documents` (paginated summary list; supports `author`, `keyword`, `year_from`, `year_to`, `page`, `page_size`, `sort_by`, `sort_order`)
+- `GET /documents/{paper_id}` (full paper detail payload)
 - `GET /authors/credibility`
-- `GET /graph`
-- `GET /timeline?keyword=<topic>`
+- `GET /graph` (`node.type`: `paper|author|keyword`; `edge.relationship`: `written_by|tagged_with|coauthor`)
+- `GET /timeline?keyword=<topic>` (sparse yearly counts; missing years are omitted)
 - `POST /admin/reset` (test/dev helper)
 - `POST /admin/bootstrap-dataset?force_reparse=<bool>` (parse/reload `Papers/` dataset)
 

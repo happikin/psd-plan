@@ -1,49 +1,67 @@
 # CoreHub Knowledge Analytics System
-## Test Plan (Version 1.0 Baseline)
+## Test Plan (Version 1.1 As-Built)
 
 ---
 
 # 1. Testing Objectives
 
 - Validate PDF ingestion and metadata extraction.
-- Verify relational data integrity.
-- Ensure author credibility computations are accurate.
-- Confirm timeline aggregation correctness.
-- Validate query logic and graph data generation.
+- Verify relational data integrity and credibility computation.
+- Validate query, graph, and timeline correctness.
+- Enforce API contract stability for UI development.
+- Detect regressions during PostgreSQL migration.
 
 ---
 
 # 2. Testing Levels
 
 ## Unit Testing
-- PDF text extraction
-- Metadata extraction
-- Keyword extraction
-- Reference extraction
-- Credibility computation
+- Metadata extraction, keyword extraction, reference extraction
+- Credibility scoring logic
 - Query filtering logic
+- Timeline aggregation logic
+
+## Contract Testing
+- Document list contract (`/documents`) including pagination metadata
+- Document detail contract (`/documents/{paper_id}`)
+- Stable graph node/edge enum values
+- Standard API error envelope shape
+- OpenAPI schema presence for response/error models
 
 ## Integration Testing
-- Upload → Store → Process → Compute Credibility
-- Keyword selection → Timeline generation
+- Upload -> parse -> metadata -> repository -> credibility recomputation
+- Dataset bootstrap -> load -> query flows
 
-## System Testing
-- Full ingestion-to-visualisation workflow
-- Graph integrity validation
-- Timeline correctness validation
+## System Testing (Planned)
+- End-to-end UI + API workflows
+- Deployment smoke tests
 
-## Performance Testing
-- Query response time ≤ 3 seconds
-- Processing time per document
-
----
-
-# 3. Continuous Integration
-
-- All merge requests trigger automated tests.
-- Coverage reports generated automatically.
-- Build fails if tests do not pass.
+## Performance Testing (Planned)
+- Soft target: typical GET APIs under ~5s on local/dev dataset
+- Upload processing measured for large PDFs
+- Benchmark script to be added (`T-011`)
 
 ---
 
-*End of Version 1.0 Test Plan*
+# 3. Continuous Integration Status
+
+Current state:
+- Tests are runnable locally via `pytest`.
+- Contract tests are available in `tests/test_api_contract.py`.
+
+Pending (T-008):
+- CI pipeline for automatic pytest on merge requests
+- Coverage reporting and threshold gates
+- Lint/type checks in CI
+
+---
+
+# 4. Current Test Artifacts
+
+- `tests/test_services.py`
+- `tests/test_dataset_service.py`
+- `tests/test_api_contract.py`
+
+---
+
+*End of Version 1.1 As-Built Test Plan*

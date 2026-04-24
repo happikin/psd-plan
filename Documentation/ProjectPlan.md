@@ -1,11 +1,13 @@
 # CoreHub Knowledge Analytics System
-## Project Plan (Version 1.0 Baseline)
+## Project Plan (Version 1.1 In-Flight)
 
 ---
 
 # 1. Project Overview
 
-The CoreHub Knowledge Analytics System aims to deliver a Minimum Viable Product (MVP) that supports ingestion, structured storage, analytical querying, and visualisation of academic and related documents.
+The CoreHub Knowledge Analytics System delivers an MVP for ingestion, metadata extraction, analytics APIs, and graph/timeline data outputs.
+
+Current phase: backend stabilization + storage migration prep + UI integration baseline.
 
 ---
 
@@ -14,11 +16,11 @@ The CoreHub Knowledge Analytics System aims to deliver a Minimum Viable Product 
 The team follows a lightweight Scrum-inspired iterative approach:
 
 - 2-week sprint cycles
-- Sprint planning meeting at the beginning of each sprint
+- Sprint planning at the start of sprint
 - Weekly progress sync
 - Sprint review and retrospective
-- GitLab issue tracking for all tasks
-- Feature-branch workflow with mandatory merge requests
+- GitLab issue tracking
+- Feature branch workflow with merge requests
 
 ---
 
@@ -27,77 +29,74 @@ The team follows a lightweight Scrum-inspired iterative approach:
 | Role | Owners | Primary Responsibilities |
 |------|----|--------------------------|
 | Project Lead | Adam Todd | Planning, coordination, documentation oversight, risk management |
-| Backend Lead | Yashesvi Raina | API development, ingestion pipeline, database management |
-| Data/NLP Lead | Hansheng Li | Metadata extraction, keyword analysis, relationship modelling |
-| Frontend Lead | Xin Wen | UI implementation, visualisation, interaction design |
-| DevOps & QA Lead | Boyang Li | CI/CD setup, testing framework, Docker deployment |
+| Backend Lead | Yashesvi Raina | API development, ingestion pipeline, PostgreSQL migration |
+| Data/NLP Lead | Hansheng Li | Metadata extraction quality, keyword/topic quality improvements |
+| Frontend Lead | Xin Wen | UI implementation, graph/timeline visualisation, API integration |
+| DevOps & QA Lead | Boyang Li | CI pipeline, test automation, release validation |
 
 ---
 
-# 4. Work Breakdown Structure (WBS)
+# 4. As-Built Progress Snapshot (2026-04-24)
 
-## Phase 1 – Foundation
-- Finalise requirements
-- Define system architecture
-- Define database schema
-- Establish repository structure
-- Configure CI pipeline
+Completed:
+- FastAPI MVP endpoints for upload, listing/filtering, credibility, graph, timeline
+- Dataset bootstrap from `Papers/` to `data/parsed/papers.jsonl`
+- Deterministic metadata/keyword/reference/topic extraction pipeline
+- API contract hardening: typed responses, standardized error schema, pagination metadata
+- API contract documentation and automated contract tests
 
-## Phase 2 – Core Implementation
-- Implement PDF ingestion
-- Implement raw text storage
-- Implement metadata extraction
-- Implement relational modelling
-- Implement basic API endpoints
+In progress:
+- PostgreSQL replacement for in-memory repository (without API contract breakage)
 
-## Phase 3 – Analytical Features
-- Author relationship graph
-- Keyword/topic linking
-- Reference network construction
-- Timeline analysis
-- Basic sentiment analysis
-
-## Phase 4 – Interface & Visualisation
-- Query filtering UI
-- Graph visualisation
-- Timeline visualisation
-- Tabular result display
-
-## Phase 5 – Testing & Deployment
-- Unit testing implementation
-- Integration testing
-- Usability testing
-- Performance measurement
-- Docker deployment setup
+Pending:
+- Frontend implementation against `/documents`, `/documents/{paper_id}`, `/graph`, `/timeline`
+- CI quality gates (tests, coverage, lint)
+- Docker/deployment hardening
 
 ---
 
-# 5. Estimation Methodology
+# 5. Work Breakdown Structure (Current)
 
-Tasks are estimated using relative complexity scoring (1–8 scale).
+## Workstream A - Backend/Data
+- Migrate repository layer to PostgreSQL
+- Add migration-safe regression tests
+- Tune query/indexing performance
+
+## Workstream B - Frontend
+- Implement document list/detail views
+- Integrate graph visualisation from `/graph`
+- Integrate timeline view from `/timeline`
+
+## Workstream C - QA/DevOps
+- Add CI pipeline and coverage threshold
+- Add lint/type checks
+- Add performance benchmark script
+
+## Workstream D - Documentation/Governance
+- Keep API contract and traceability matrix synchronized with code
+- Update risk and project artifacts each sprint
 
 ---
 
 # 6. Milestone Alignment
 
-## Milestone 1
+## Milestone 1 (Completed)
 - Requirements baseline established
-- Initial architecture defined
-- Initial risk register created
-- Initial testing strategy outlined
+- Initial architecture and risk baseline
 
-## Milestone 2
-- Alpha-stage working prototype
-- Automated testing integrated
-- Revised risk register
-- Refined architecture documentation
+## Milestone 2 (Completed)
+- Working backend prototype with tests
+- Dataset bootstrap and core analytics features
 
-## Final Submission
-- Stable, deployable MVP
-- Performance evaluation results
-- Usability evaluation results
-- Complete documentation set
+## Current Increment (In Progress)
+- API contract finalized for UI consumption
+- PostgreSQL migration with no public API shape change
+
+## Final Submission (Planned)
+- Stable deployable MVP with CI and deployment support
+- Performance and usability evidence
+- Complete synchronized documentation set
 
 ---
 
-*End of Version 1.0 Baseline Project Plan*
+*End of Version 1.1 In-Flight Project Plan*
