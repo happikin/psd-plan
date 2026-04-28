@@ -6,12 +6,15 @@ set -euo pipefail
 #   bash Tooling/run_backend.sh --skip-tests
 #   bash Tooling/run_backend.sh --no-install
 #   bash Tooling/run_backend.sh --port 9000
+#   bash Tooling/run_backend.sh --db postgres --database-url 'postgresql+psycopg://user:pass@localhost:5432/corehub'
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VENV_DIR="$ROOT_DIR/.venv"
 PORT="8000"
 RUN_TESTS="1"
 INSTALL_DEPS="1"
+DB_MODE="${DB_MODE:-sqlite}"
+DATABASE_URL_OVERRIDE=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -27,6 +30,14 @@ while [[ $# -gt 0 ]]; do
       PORT="${2:-8000}"
       shift 2
       ;;
+    --db)
+      DB_MODE="${2:-sqlite}"
+      shift 2
+      ;;
+    --database-url)
+      DATABASE_URL_OVERRIDE="${2:-}"
+      shift 2
+      ;;
     *)
       echo "Unknown option: $1"
       exit 1
@@ -35,6 +46,16 @@ while [[ $# -gt 0 ]]; do
 done
 
 cd "$ROOT_DIR"
+
+if [[ -n "$DATABASE_URL_OVERRIDE" ]]; then
+  export DATABASE_URL="$DATABASE_URL_OVERRIDE"
+fi
+export DB_MODE
+
+if [[ "$DB_MODE" == "postgres" && -z "${DATABASE_URL:-}" ]]; then
+  echo "Error: DB_MODE=postgres requires DATABASE_URL (or --database-url)."
+  exit 1
+fi
 
 echo "[1/5] Ensuring virtual environment exists..."
 if [[ ! -d "$VENV_DIR" ]]; then
@@ -60,5 +81,5 @@ else
   echo "Skipped (--skip-tests)."
 fi
 
-echo "[5/5] Starting backend on port $PORT..."
+echo "[5/5] Starting backend on port $PORT (DB_MODE=$DB_MODE)..."
 exec uvicorn app:app --reload --app-dir src/backend --port "$PORT"
