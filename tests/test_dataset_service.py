@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from dataset_service import append_new_papers_to_jsonl, bootstrap_repository, load_parsed_jsonl, parse_papers_to_jsonl
-from repository import InMemoryRepository
+from repository import InMemoryRepository, SQLRepository
 
 
 def test_parse_papers_to_jsonl_and_load(monkeypatch, tmp_path: Path) -> None:
@@ -83,3 +83,24 @@ def test_bootstrap_appends_only_new_pdfs(monkeypatch, tmp_path: Path) -> None:
     result = bootstrap_repository(repo, papers_dir=papers_dir, parsed_output_path=parsed_path, force_reparse=False)
     assert result["loaded"] == 2
     assert len(repo.all_papers()) == 2
+
+
+def test_load_parsed_jsonl_dedupes_case_variant_references_for_sqlite(tmp_path: Path) -> None:
+    parsed_path = tmp_path / "data" / "parsed" / "papers.jsonl"
+    parsed_path.parent.mkdir(parents=True, exist_ok=True)
+    parsed_path.write_text(
+        (
+            '{"title":"Paper One","raw_text":"t","abstract":"a","publication_date":2024,'
+            '"sentiment":"neutral","authors":["Alice"],"keywords":["ai"],'
+            '"topics":[],"key_terms":[],"references":["Ref A","ref a"],"source_file":"one.pdf"}\n'
+        ),
+        encoding="utf-8",
+    )
+
+    repo = SQLRepository(f"sqlite:///{tmp_path}/corehub_test.db")
+    loaded = load_parsed_jsonl(repo, parsed_path)
+
+    assert loaded == 1
+    papers = repo.all_papers()
+    assert len(papers) == 1
+    assert papers[0].references == ["Ref A"]

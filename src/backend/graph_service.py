@@ -4,10 +4,10 @@ from typing import Set
 
 from models import GraphEdge, GraphNode, GraphPayload
 from relationship_service import coauthor_edges
-from repository import InMemoryRepository
+from repository import Repository
 
 
-def build_graph_payload(repository: InMemoryRepository) -> GraphPayload:
+def build_graph_payload(repository: Repository) -> GraphPayload:
     nodes: list[GraphNode] = []
     edges: list[GraphEdge] = []
     seen_nodes: Set[str] = set()
@@ -17,13 +17,15 @@ def build_graph_payload(repository: InMemoryRepository) -> GraphPayload:
             seen_nodes.add(node.id)
             nodes.append(node)
 
+    authors_by_key = {a.name.lower(): a for a in repository.all_authors()}
+
     for paper in repository.all_papers():
         paper_id = f"paper:{paper.id}"
         add_node(GraphNode(id=paper_id, label=paper.title, type="paper"))
 
         for author in paper.authors:
             author_key = author.lower()
-            author_obj = repository.authors.get(author_key)
+            author_obj = authors_by_key.get(author_key)
             author_id = f"author:{author_key}"
             add_node(
                 GraphNode(
@@ -50,4 +52,3 @@ def build_graph_payload(repository: InMemoryRepository) -> GraphPayload:
         )
 
     return GraphPayload(nodes=nodes, edges=edges)
-

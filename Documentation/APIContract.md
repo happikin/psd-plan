@@ -1,6 +1,6 @@
 # CoreHub API Contract
 
-Last updated: 2026-04-24
+Last updated: 2026-04-28
 
 This document defines the frontend-facing API contract for the backend in `src/backend/app.py`.
 
@@ -30,6 +30,14 @@ This document defines the frontend-facing API contract for the backend in `src/b
   - `message` (human-readable summary)
   - `details` (optional object/list/string)
   - `request_id` (per-request identifier, also returned in `x-request-id` header)
+
+## Persistence Model
+
+- Runtime query state is persisted in a relational database via repository abstraction.
+- Default DB URL (when `DATABASE_URL` is unset): `sqlite:///./data/corehub.db`.
+- PostgreSQL is supported by setting `DATABASE_URL` (e.g. `postgresql+psycopg://...`).
+- Parsed artifact cache (`data/parsed/papers.jsonl`) is an ingestion/bootstrap source, not the primary query store.
+- Public API route signatures and response schemas are storage-engine agnostic.
 
 ## Error Schema
 
@@ -238,7 +246,7 @@ Note: years with `0` count are not returned.
 
 ### `POST /admin/reset`
 
-Dev/test helper. Clears in-memory repository.
+Dev/test helper. Clears persisted repository entities in the configured database.
 
 Response `200`:
 
@@ -250,7 +258,7 @@ Response `200`:
 
 ### `POST /admin/bootstrap-dataset`
 
-Dev/test helper. Syncs `Papers/` to parsed dataset and reloads runtime repository.
+Dev/test helper. Syncs `Papers/` to parsed dataset cache, resets database state, and reloads repository from parsed cache.
 
 Query params:
 
@@ -267,6 +275,11 @@ Response `200`:
   "used_cache": false
 }
 ```
+
+Behavior notes:
+
+- `force_reparse=true`: reparses all PDFs from `Papers/` into `data/parsed/papers.jsonl`, then reloads DB.
+- `force_reparse=false`: appends only new PDFs (based on `source_file`) to parsed cache, then reloads DB.
 
 ## UI Integration Baseline
 

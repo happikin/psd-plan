@@ -8,7 +8,7 @@ from credibility_service import recompute_credibility
 from metadata_extractor import extract_metadata
 from models import IngestedDocument
 from pdf_parser import PDFParserError, parse_pdf_content
-from repository import InMemoryRepository
+from repository import Repository
 
 
 def _pdf_paths(papers_dir: Path) -> list[Path]:
@@ -105,7 +105,7 @@ def append_new_papers_to_jsonl(papers_dir: Path, parsed_output_path: Path) -> Tu
     return ingested_count, failed_count, skipped_count
 
 
-def load_parsed_jsonl(repository: InMemoryRepository, parsed_path: Path) -> int:
+def load_parsed_jsonl(repository: Repository, parsed_path: Path) -> int:
     if not parsed_path.exists():
         return 0
 
@@ -125,7 +125,7 @@ def load_parsed_jsonl(repository: InMemoryRepository, parsed_path: Path) -> int:
 
 
 def bootstrap_repository(
-    repository: InMemoryRepository,
+    repository: Repository,
     papers_dir: Path,
     parsed_output_path: Path,
     force_reparse: bool = False,

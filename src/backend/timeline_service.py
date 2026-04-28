@@ -4,10 +4,10 @@ from collections import Counter
 from typing import List
 
 from models import TimelinePoint
-from repository import InMemoryRepository
+from repository import Repository
 
 
-def keyword_timeline(repository: InMemoryRepository, keyword: str) -> List[TimelinePoint]:
+def keyword_timeline(repository: Repository, keyword: str) -> List[TimelinePoint]:
     needle = keyword.lower().strip()
     yearly = Counter()
 
@@ -18,4 +18,3 @@ def keyword_timeline(repository: InMemoryRepository, keyword: str) -> List[Timel
             yearly[paper.publication_date] += 1
 
     return [TimelinePoint(year=year, count=count) for year, count in sorted(yearly.items())]
-

@@ -29,11 +29,11 @@ from models import (
 )
 from pdf_parser import PDFParserError, parse_pdf_content
 from query_service import query_papers
-from repository import InMemoryRepository
+from repository import create_repository
 from timeline_service import keyword_timeline
 
 app = FastAPI(title="CoreHub Knowledge Analytics System", version="0.1.0")
-repo = InMemoryRepository()
+repo = create_repository()
 papers_dir = Path("Papers")
 parsed_dataset_path = Path("data/parsed/papers.jsonl")
 SOFT_RATE_LIMIT_PER_MINUTE = 600
@@ -203,7 +203,7 @@ def list_documents(
 
 @app.get("/documents/{paper_id}", response_model=Paper, responses={404: {"model": APIErrorResponse}})
 def document_detail(paper_id: int) -> Paper:
-    paper = repo.papers.get(paper_id)
+    paper = repo.get_paper(paper_id)
     if paper is None:
         raise HTTPException(status_code=404, detail="Paper not found")
     return paper

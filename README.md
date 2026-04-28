@@ -9,7 +9,8 @@ This repository now contains an executable MVP aligned with the project story an
 - Dataset bootstrap pipeline that parses `Papers/*.pdf` into `data/parsed/papers.jsonl`.
 - Runtime startup sync that parses only new PDFs and appends them to parsed artifacts.
 - Deterministic keyword, reference, and sentiment extraction.
-- In-memory relational model for papers, authors, keywords, and references.
+- Relational storage layer via SQLAlchemy repository.
+- Default runtime DB is SQLite (`data/corehub.db`); PostgreSQL is supported via `DATABASE_URL`.
 - Author credibility scoring based on citation references in the ingested dataset.
 - Query/filter API (author, keyword, year range).
 - Graph payload API for D3 frontend integration.
@@ -51,6 +52,13 @@ pip install -e .[dev]
 uvicorn app:app --reload --app-dir src/backend
 ```
 
+Optional: run against PostgreSQL instead of default SQLite:
+
+```bash
+export DATABASE_URL='postgresql+psycopg://<user>:<pass>@<host>:<port>/<db>'
+uvicorn app:app --reload --app-dir src/backend
+```
+
 4. Open API docs:
 
 - `http://127.0.0.1:8000/docs`
@@ -70,10 +78,12 @@ uvicorn app:app --reload --app-dir src/backend
 ## Dataset handling policy
 
 - `Papers/` is treated as source-only input for initial parsing.
-- Parsed runtime dataset is stored as `data/parsed/papers.jsonl`.
+- Parsed ingestion cache is stored as `data/parsed/papers.jsonl`.
+- Runtime query state is persisted in relational DB (`sqlite:///./data/corehub.db` by default, or `DATABASE_URL` if provided).
 - On each startup, the app checks `Papers/` for files not already present in parsed cache and parses only those new PDFs.
 - New parsed records are appended to `data/parsed/papers.jsonl`; existing parsed records are reused.
-- This supports the requirement to operate on parsed/metadata representations during runtime.
+- Startup bootstrap then resets and reloads the DB state from the parsed cache.
+- This supports the requirement to operate on parsed/metadata representations while using persistent relational storage.
 
 ## Parsed dataset schema (`data/parsed/papers.jsonl`)
 
@@ -110,8 +120,8 @@ The following planned modules from `Documentation/TraceabilityMatrix.md` are imp
 
 ## Suggested next development steps
 
-1. Replace in-memory repository with SQLite/PostgreSQL (SQLModel or SQLAlchemy).
-2. Add robust PDF metadata extraction (title/author/date) using parser fallbacks.
-3. Implement retraction status checks from external reliability sources.
-4. Build the React + D3 frontend consuming `/graph` and `/timeline`.
-5. Add CI pipeline with linting, type-checking, tests, and coverage thresholds.
+1. Add DB migration/versioning tooling (e.g. Alembic) instead of runtime `create_all`.
+2. Add SQLite/PostgreSQL integration tests for persistence, constraints, and restart behavior.
+3. Add robust PDF metadata extraction (title/author/date) using parser fallbacks.
+4. Implement retraction status checks from external reliability sources.
+5. Build the React + D3 frontend consuming `/graph` and `/timeline`.
