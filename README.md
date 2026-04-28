@@ -55,8 +55,21 @@ uvicorn app:app --reload --app-dir src/backend
 Optional: run against PostgreSQL instead of default SQLite:
 
 ```bash
+export DB_MODE='postgres'
 export DATABASE_URL='postgresql+psycopg://<user>:<pass>@<host>:<port>/<db>'
 uvicorn app:app --reload --app-dir src/backend
+```
+
+Optional: run with helper script (SQLite default):
+
+```bash
+bash Tooling/run_backend.sh
+```
+
+Optional: run with helper script against PostgreSQL:
+
+```bash
+bash Tooling/run_backend.sh --db postgres --database-url 'postgresql+psycopg://<user>:<pass>@<host>:<port>/<db>'
 ```
 
 4. Open API docs:
@@ -79,7 +92,8 @@ uvicorn app:app --reload --app-dir src/backend
 
 - `Papers/` is treated as source-only input for initial parsing.
 - Parsed ingestion cache is stored as `data/parsed/papers.jsonl`.
-- Runtime query state is persisted in relational DB (`sqlite:///./data/corehub.db` by default, or `DATABASE_URL` if provided).
+- Runtime query state is persisted in relational DB (`sqlite:///./data/corehub.db` by default).
+- For PostgreSQL runtime, set `DB_MODE=postgres` and provide `DATABASE_URL`.
 - On each startup, the app checks `Papers/` for files not already present in parsed cache and parses only those new PDFs.
 - New parsed records are appended to `data/parsed/papers.jsonl`; existing parsed records are reused.
 - Startup bootstrap then resets and reloads the DB state from the parsed cache.

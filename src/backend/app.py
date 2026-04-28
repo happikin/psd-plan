@@ -42,6 +42,7 @@ SOFT_MAX_PAYLOAD_MB = 50
 
 @app.on_event("startup")
 def startup_bootstrap() -> None:
+    repo.ping()
     # On every boot, sync only new PDFs from Papers/ into parsed artifacts, then load runtime repository.
     bootstrap_repository(repo, papers_dir=papers_dir, parsed_output_path=parsed_dataset_path, force_reparse=False)
 

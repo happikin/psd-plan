@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timezone
 from typing import Dict, Iterable, List, Optional, Protocol
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, create_engine, select
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, create_engine, select, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
 
 from models import Author, IngestedDocument, Keyword, Paper, Reference
@@ -37,6 +37,7 @@ class Repository(Protocol):
     def reset(self) -> None: ...
     def titles(self) -> Iterable[str]: ...
     def set_author_credibility(self, scores: Dict[str, int]) -> None: ...
+    def ping(self) -> None: ...
 
 
 class InMemoryRepository:
@@ -134,6 +135,9 @@ class InMemoryRepository:
     def titles(self) -> Iterable[str]:
         for paper in self.papers.values():
             yield paper.title
+
+    def ping(self) -> None:
+        return None
 
 
 class Base(DeclarativeBase):
@@ -240,7 +244,8 @@ class PaperReferenceRecord(Base):
 
 class SQLRepository:
     def __init__(self, database_url: str) -> None:
-        self.engine = create_engine(database_url)
+        self.database_url = database_url
+        self.engine = create_engine(database_url, pool_pre_ping=True)
         self.SessionLocal = sessionmaker(bind=self.engine, expire_on_commit=False)
         Base.metadata.create_all(self.engine)
 
@@ -379,7 +384,30 @@ class SQLRepository:
             for title in session.scalars(select(PaperRecord.title)).all():
                 yield title
 
+    def ping(self) -> None:
+        with self.engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+
+
+def _normalized_db_mode(raw_mode: str) -> str:
+    mode = raw_mode.strip().lower()
+    if mode in {"postgres", "postgresql"}:
+        return "postgres"
+    if mode in {"sqlite"}:
+        return "sqlite"
+    raise ValueError("Unsupported DB_MODE. Use 'sqlite' or 'postgres'.")
+
 
 def create_repository() -> Repository:
-    database_url = os.getenv("DATABASE_URL", "sqlite:///./data/corehub.db")
+    db_mode = _normalized_db_mode(os.getenv("DB_MODE", "sqlite"))
+    database_url = os.getenv("DATABASE_URL")
+
+    if db_mode == "postgres":
+        if not database_url:
+            raise ValueError("DB_MODE=postgres requires DATABASE_URL to be set.")
+        if not database_url.startswith("postgresql+psycopg://"):
+            raise ValueError("For DB_MODE=postgres, DATABASE_URL must start with 'postgresql+psycopg://'.")
+    else:
+        database_url = database_url or "sqlite:///./data/corehub.db"
+
     return SQLRepository(database_url)

@@ -35,7 +35,7 @@ This document defines the frontend-facing API contract for the backend in `src/b
 
 - Runtime query state is persisted in a relational database via repository abstraction.
 - Default DB URL (when `DATABASE_URL` is unset): `sqlite:///./data/corehub.db`.
-- PostgreSQL is supported by setting `DATABASE_URL` (e.g. `postgresql+psycopg://...`).
+- PostgreSQL mode requires `DB_MODE=postgres` and `DATABASE_URL` (e.g. `postgresql+psycopg://...`).
 - Parsed artifact cache (`data/parsed/papers.jsonl`) is an ingestion/bootstrap source, not the primary query store.
 - Public API route signatures and response schemas are storage-engine agnostic.
 
